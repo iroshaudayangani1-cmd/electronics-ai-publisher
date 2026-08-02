@@ -1,6 +1,6 @@
-from core.news_collector import collect_news
+from core.collector import collect_news
 
-from core.article_rewriter import rewrite_articles
+from core.article_writer import rewrite_articles
 
 from core.image_generator import generate_images
 
