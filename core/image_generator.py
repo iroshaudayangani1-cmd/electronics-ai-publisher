@@ -1,161 +1,81 @@
 import json
 import os
-import time
-
-from google import genai
+import requests
+import urllib.parse
 
 from config.settings import (
-    GEMINI_API_KEY,
-    GEMINI_MODEL,
-    GEMINI_MAX_RETRIES,
-    GEMINI_RETRY_DELAY,
     REWRITTEN_JSON,
+    IMAGE_FOLDER,
 )
 
 from core.cloudinary_uploader import upload_image
 
 
-# ==========================================================
-# IMAGE GENERATOR
-# ==========================================================
-
 def generate_images():
 
-    if not GEMINI_API_KEY:
-        raise Exception("GEMINI_API_KEY not found.")
-
     if not os.path.exists(REWRITTEN_JSON):
-        raise Exception(REWRITTEN_JSON)
-
-    client = genai.Client(
-        api_key=GEMINI_API_KEY
-    )
-
-    with open(
-        REWRITTEN_JSON,
-        "r",
-        encoding="utf-8"
-    ) as f:
-
-        articles = json.load(f)
-
-    if not articles:
-
         print("No rewritten articles found.")
         return
 
-    for index, article in enumerate(articles, start=1):
+    with open(REWRITTEN_JSON, "r", encoding="utf-8") as f:
+        articles = json.load(f)
 
-        print(f"\nGenerating image for article {index}")
+    os.makedirs(IMAGE_FOLDER, exist_ok=True)
 
-        image_prompt = article.get("image_prompt", "")
+    for i, article in enumerate(articles, start=1):
 
-        if not image_prompt:
+        prompt = article.get("image_prompt", "")
 
-            image_prompt = f"""
-Ultra realistic editorial electronics photograph.
+        if not prompt:
+            print(f"Article {i}: No image prompt.")
+            continue
 
-Subject:
+        print(f"\nGenerating AI image for article {i}...")
 
-{article["title"]}
+        encoded = urllib.parse.quote(prompt)
 
-Requirements:
+        image_url = (
+            f"https://image.pollinations.ai/prompt/{encoded}"
+            "?width=1280&height=720&model=flux"
+        )
 
-Professional electronics laboratory
+        filename = os.path.join(
+            IMAGE_FOLDER,
+            f"article_{i}.jpg"
+        )
 
-Printed circuit boards
+        try:
 
-Electronic components
+            response = requests.get(
+                image_url,
+                timeout=120,
+            )
 
-Modern workbench
+            if response.status_code != 200:
+                print("Image generation failed.")
+                continue
 
-Natural lighting
+            with open(filename, "wb") as img:
+                img.write(response.content)
 
-High detail
+            print("✓ AI image generated")
 
-Photojournalism
+            print("Uploading to Cloudinary...")
 
-Cinematic composition
+            cloudinary_url = upload_image(filename)
 
-16:9 aspect ratio
+            article["image"] = filename
+            article["image_url"] = cloudinary_url
 
-No text
+            print("✓ Uploaded successfully")
+            print(cloudinary_url)
 
-No logo
+        except Exception as e:
 
-No watermark
+            print("Image error:")
+            print(e)
 
-No illustration
-
-Real photograph
-"""
-        success = False
-
-        for attempt in range(1, GEMINI_MAX_RETRIES + 1):
-
-            try:
-
-                print(f"Attempt {attempt}/{GEMINI_MAX_RETRIES}")
-
-                response = client.models.generate_images(
-
-                    model="imagen-4.0-generate-preview",
-
-                    prompt=image_prompt,
-
-                )
-
-                image = response.generated_images[0].image
-
-                filename = f"electronics_{index}.png"
-
-                image.save(filename)
-
-                print("✓ AI image generated")
-
-                print("Uploading to Cloudinary...")
-
-                image_url = upload_image(filename)
-
-                article["image_url"] = image_url
-
-                print("✓ Uploaded successfully")
-
-                print(image_url)
-
-                if os.path.exists(filename):
-
-                    os.remove(filename)
-
-                success = True
-
-                break
-
-            except Exception as e:
-
-                print(e)
-
-                wait = GEMINI_RETRY_DELAY * attempt
-
-                print(f"Retrying in {wait} seconds...")
-
-                time.sleep(wait)
-
-        if not success:
-
-            print("Image generation failed.")
-
-            article["image_url"] = ""
-              # ==========================================================
-    # SAVE UPDATED ARTICLES
-    # ==========================================================
-
-    with open(
-        REWRITTEN_JSON,
-        "w",
-        encoding="utf-8"
-    ) as f:
-
+    with open(REWRITTEN_JSON, "w", encoding="utf-8") as f:
         json.dump(
             articles,
             f,
@@ -166,12 +86,5 @@ Real photograph
     print("\nFinished generating AI images.")
 
 
-# ==========================================================
-# MAIN
-# ==========================================================
-
 if __name__ == "__main__":
-
     generate_images()
-
-
