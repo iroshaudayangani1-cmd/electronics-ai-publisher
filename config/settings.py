@@ -40,4 +40,7 @@ FACEBOOK_PAGE_ACCESS_TOKEN = os.getenv("FACEBOOK_PAGE_ACCESS_TOKEN")
 # ==========================
 
 NEWS_JSON = "output/news/news.json"
+
 REWRITTEN_JSON = "output/news/rewritten.json"
+
+IMAGE_FOLDER = "output/images"
