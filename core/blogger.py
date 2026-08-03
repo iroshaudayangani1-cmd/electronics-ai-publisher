@@ -15,36 +15,35 @@ from config.settings import (
 
 def get_access_token():
 
-  print("=" * 60)
-print("BLOGGER DEBUG")
-print("=" * 60)
+    print("=" * 60)
+    print("BLOGGER DEBUG")
+    print("=" * 60)
 
-print("CLIENT_ID:", BLOGGER_CLIENT_ID)
-print("CLIENT_SECRET first 20:", BLOGGER_CLIENT_SECRET[:20])
-print("REFRESH_TOKEN first 25:", BLOGGER_REFRESH_TOKEN[:25])
+    print("CLIENT_ID:", BLOGGER_CLIENT_ID)
+    print("CLIENT_SECRET first 20:", BLOGGER_CLIENT_SECRET[:20])
+    print("REFRESH_TOKEN first 25:", BLOGGER_REFRESH_TOKEN[:25])
 
-print("=" * 60)
+    print("=" * 60)
 
-token_url = "https://oauth2.googleapis.com/token"
+    token_url = "https://oauth2.googleapis.com/token"
 
-payload = {
-    "client_id": BLOGGER_CLIENT_ID,
-    "client_secret": BLOGGER_CLIENT_SECRET,
-    "refresh_token": BLOGGER_REFRESH_TOKEN,
-    "grant_type": "refresh_token",
-}
+    payload = {
+        "client_id": BLOGGER_CLIENT_ID,
+        "client_secret": BLOGGER_CLIENT_SECRET,
+        "refresh_token": BLOGGER_REFRESH_TOKEN,
+        "grant_type": "refresh_token",
+    }
 
-response = requests.post(token_url, data=payload, timeout=60)
+    response = requests.post(
+        token_url,
+        data=payload,
+        timeout=60,
+    )
 
-print("STATUS:", response.status_code)
-print("BODY:", response.text)
+    print("STATUS:", response.status_code)
+    print("BODY:", response.text)
 
-response.raise_for_status()
-
-print("STATUS:", response.status_code)
-print("BODY:", response.text)
-
-response.raise_for_status()
+    response.raise_for_status()
 
     return response.json()["access_token"]
 
