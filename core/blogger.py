@@ -32,33 +32,31 @@ def get_access_token():
     token_url = "https://oauth2.googleapis.com/token"
 
     payload = {
-
         "client_id": BLOGGER_CLIENT_ID,
-
         "client_secret": BLOGGER_CLIENT_SECRET,
-
         "refresh_token": BLOGGER_REFRESH_TOKEN,
-
         "grant_type": "refresh_token",
-
     }
 
     response = requests.post(
-    token_url,
-    data=payload,
-    timeout=60,
-)
-
-print("STATUS:", response.status_code)
-print("BODY:", response.text)
-
-response.raise_for_status()
+        token_url,
+        data=payload,
+        timeout=60,
     )
+
+    print("=" * 60)
+    print("GOOGLE TOKEN RESPONSE")
+    print("=" * 60)
+    print("STATUS:", response.status_code)
+    print("BODY:", response.text)
+    print("=" * 60)
 
     response.raise_for_status()
 
     return response.json()["access_token"]
-  # ==========================================================
+
+
+# ==========================================================
 # PUBLISH POST
 # ==========================================================
 
@@ -69,44 +67,30 @@ def publish_post(title, content, tags):
     url = f"https://www.googleapis.com/blogger/v3/blogs/{BLOG_ID}/posts/"
 
     headers = {
-
         "Authorization": f"Bearer {access_token}",
-
         "Content-Type": "application/json",
-
     }
 
     payload = {
-
         "kind": "blogger#post",
-
         "title": title,
-
         "content": content,
-
         "labels": tags,
-
     }
 
     response = requests.post(
-
         url,
-
         headers=headers,
-
         json=payload,
-
         timeout=120,
-
     )
 
     print("=" * 60)
-    print("BLOGGER DEBUG")
+    print("BLOGGER POST RESPONSE")
     print("=" * 60)
     print("Status Code:", response.status_code)
 
     if response.status_code != 200:
-
         print(response.text)
 
     response.raise_for_status()
@@ -116,13 +100,12 @@ def publish_post(title, content, tags):
     print("✓ Blogger accepted the post.")
 
     return {
-
         "id": data["id"],
-
         "url": data["url"],
-
     }
-  # ==========================================================
+
+
+# ==========================================================
 # GET RECENT TITLES
 # ==========================================================
 
@@ -136,19 +119,13 @@ def get_recent_titles(limit=20):
     )
 
     headers = {
-
         "Authorization": f"Bearer {access_token}"
-
     }
 
     response = requests.get(
-
         url,
-
         headers=headers,
-
         timeout=60,
-
     )
 
     response.raise_for_status()
@@ -158,11 +135,8 @@ def get_recent_titles(limit=20):
     titles = set()
 
     for post in data.get("items", []):
-
         title = post.get("title", "").strip().lower()
-
         if title:
-
             titles.add(title)
 
     return titles
