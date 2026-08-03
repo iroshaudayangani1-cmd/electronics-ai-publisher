@@ -15,7 +15,7 @@ from config.settings import (
 
 def get_access_token():
 
-   print("=" * 60)
+  print("=" * 60)
 print("BLOGGER DEBUG")
 print("=" * 60)
 
@@ -35,6 +35,11 @@ payload = {
 }
 
 response = requests.post(token_url, data=payload, timeout=60)
+
+print("STATUS:", response.status_code)
+print("BODY:", response.text)
+
+response.raise_for_status()
 
 print("STATUS:", response.status_code)
 print("BODY:", response.text)
