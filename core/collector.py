@@ -12,62 +12,6 @@ from bs4 import BeautifulSoup
 from config.settings import NEWS_JSON
 
 
-# ==========================================================
-# ELECTRONICS RSS SOURCES
-# ==========================================================
-
-RSS_FEEDS = [
-
-    {
-        "name": "Hackaday",
-        "url": "https://hackaday.com/blog/feed/",
-        "trust": 10,
-    },
-
-    {
-        "name": "All About Circuits",
-        "url": "https://www.allaboutcircuits.com/rss/",
-        "trust": 10,
-    },
-
-    {
-        "name": "Arduino",
-        "url": "https://blog.arduino.cc/feed/",
-        "trust": 10,
-    },
-
-    {
-        "name": "Raspberry Pi",
-        "url": "https://www.raspberrypi.com/news/feed/",
-        "trust": 10,
-    },
-
-    {
-        "name": "Electronics Weekly",
-        "url": "https://www.electronicsweekly.com/feed",
-        "trust": 9,
-    },
-
-    {
-        "name": "EE Times",
-        "url": "https://www.eetimes.com/feed/",
-        "trust": 9,
-    },
-
-    {
-        "name": "Embedded Computing",
-        "url": "https://embeddedcomputing.com/rss.xml",
-        "trust": 9,
-    },
-
-    {
-        "name": "IEEE Spectrum",
-        "url": "https://spectrum.ieee.org/rss/fulltext",
-        "trust": 10,
-    },
-
-]
-
 
 # ==========================================================
 # VIRAL KEYWORDS
